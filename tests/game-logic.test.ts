@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createDigitValidator,
+  countPossibleSecrets,
   evaluateGuess,
   generateSecret,
   isValidGuess,
@@ -68,5 +69,20 @@ describe("isValidGuess", () => {
     expect(isValidGuess("aF09", 4, 16)).toBe(true);
     expect(isValidGuess("aG09", 4, 16)).toBe(false);
     expect(isValidGuess("aA09", 4, 16)).toBe(false);
+  });
+});
+
+describe("countPossibleSecrets", () => {
+  it("counts permutations without excluding leading zeroes", () => {
+    expect(countPossibleSecrets(4, 10)).toBe(5040);
+    expect(countPossibleSecrets(2, 2)).toBe(2);
+  });
+
+  it("uses one as the empty permutation base case", () => {
+    expect(countPossibleSecrets(0, 10)).toBe(1);
+  });
+
+  it("rejects lengths that cannot be formed from the digit alphabet", () => {
+    expect(() => countPossibleSecrets(3, 2)).toThrow(RangeError);
   });
 });
