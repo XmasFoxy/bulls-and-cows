@@ -5,6 +5,24 @@ export interface GuessResult {
   cows: number;
 }
 
+export interface GameSettings {
+  readonly length: number;
+  readonly base: number;
+}
+
+export interface GuessEntry {
+  readonly guess: string;
+  readonly result: GuessResult;
+}
+
+export interface GameState {
+  readonly settings: GameSettings;
+  readonly secret: string;
+  readonly guesses: readonly GuessEntry[];
+  readonly startedAt: number;
+  readonly status: "playing" | "won";
+}
+
 export const createDigitValidator = (
   base: number,
 ): ((char: string) => boolean) => {
@@ -103,4 +121,27 @@ export const countPossibleSecrets = (length: number, base: number): number => {
   }
 
   return countPermutations(length, base);
+};
+
+export const submitGuess = (state: GameState, guess: string): GameState => {
+  if (state.status === "won") {
+    return state;
+  }
+  if (!isValidGuess(guess, state.settings.length, state.settings.base)) {
+    throw new RangeError("Guess does not match the game settings.");
+  }
+  if (
+    state.guesses.some(
+      (entry) => entry.guess.toLowerCase() === guess.toLowerCase(),
+    )
+  ) {
+    return state;
+  }
+
+  const result = evaluateGuess(state.secret, guess);
+  return {
+    ...state,
+    guesses: [...state.guesses, { guess, result }],
+    status: result.bulls === state.settings.length ? "won" : "playing",
+  };
 };
