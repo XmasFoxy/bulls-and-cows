@@ -5,6 +5,19 @@ export interface GuessResult {
   cows: number;
 }
 
+export const createDigitValidator = (
+  base: number,
+): ((char: string) => boolean) => {
+  if (!Number.isInteger(base) || base < 2 || base > DIGITS.length) {
+    throw new RangeError("Base must be an integer between 2 and 36.");
+  }
+
+  return (char: string): boolean => {
+    const digitIndex = DIGITS.indexOf(char.toLowerCase());
+    return char.length === 1 && digitIndex >= 0 && digitIndex < base;
+  };
+};
+
 export const generateSecret = (
   length: number,
   base: number,
