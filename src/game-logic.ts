@@ -1,5 +1,10 @@
 const DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz";
 
+export interface GuessResult {
+  bulls: number;
+  cows: number;
+}
+
 export const generateSecret = (
   length: number,
   base: number,
@@ -25,4 +30,16 @@ export const generateSecret = (
   }
 
   return digits.slice(0, length).join("");
+};
+
+export const evaluateGuess = (secret: string, guess: string): GuessResult => {
+  const secretDigits = [...secret.toLowerCase()];
+  const guessDigits = [...guess.toLowerCase()];
+  const bulls = guessDigits.filter(
+    (digit, index) => digit === secretDigits[index],
+  ).length;
+  const secretSet = new Set(secretDigits);
+  const matches = guessDigits.filter((digit) => secretSet.has(digit)).length;
+
+  return { bulls, cows: matches - bulls };
 };

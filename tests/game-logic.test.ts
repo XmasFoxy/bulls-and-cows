@@ -17,7 +17,7 @@ describe("generateSecret", () => {
 
 describe("evaluateGuess", () => {
   it("counts bulls and cows without double-counting bulls", () => {
-    expect(evaluateGuess("4271", "1234")).toEqual({ bulls: 0, cows: 3 });
+    expect(evaluateGuess("4271", "1234")).toEqual({ bulls: 1, cows: 2 });
   });
 
   it("compares hexadecimal digits without regard to case", () => {
