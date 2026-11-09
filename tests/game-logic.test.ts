@@ -3,6 +3,7 @@ import {
   createDigitValidator,
   evaluateGuess,
   generateSecret,
+  isValidGuess,
 } from "../src/game-logic.js";
 
 describe("generateSecret", () => {
@@ -53,5 +54,19 @@ describe("createDigitValidator", () => {
 
   it("rejects unsupported bases", () => {
     expect(() => createDigitValidator(1)).toThrow(RangeError);
+  });
+});
+
+describe("isValidGuess", () => {
+  it("requires the configured length and unique valid digits", () => {
+    expect(isValidGuess("0123", 4, 10)).toBe(true);
+    expect(isValidGuess("012", 4, 10)).toBe(false);
+    expect(isValidGuess("0113", 4, 10)).toBe(false);
+  });
+
+  it("validates hexadecimal digits case-insensitively", () => {
+    expect(isValidGuess("aF09", 4, 16)).toBe(true);
+    expect(isValidGuess("aG09", 4, 16)).toBe(false);
+    expect(isValidGuess("aA09", 4, 16)).toBe(false);
   });
 });
