@@ -78,3 +78,29 @@ export const isValidGuess = (
     [...guess].every(isValidDigit) && new Set(normalizedDigits).size === length
   );
 };
+
+const possibleSecretsCache = new Map<string, number>();
+
+const countPermutations = (length: number, base: number): number => {
+  const key = `${length}:${base}`;
+  const cached = possibleSecretsCache.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const count =
+    length === 0 ? 1 : base * countPermutations(length - 1, base - 1);
+  possibleSecretsCache.set(key, count);
+  return count;
+};
+
+export const countPossibleSecrets = (length: number, base: number): number => {
+  if (!Number.isInteger(base) || base < 2 || base > DIGITS.length) {
+    throw new RangeError("Base must be an integer between 2 and 36.");
+  }
+  if (!Number.isInteger(length) || length < 0 || length > base) {
+    throw new RangeError("Length must be an integer between 0 and the base.");
+  }
+
+  return countPermutations(length, base);
+};
