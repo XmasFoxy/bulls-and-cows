@@ -56,3 +56,25 @@ export const evaluateGuess = (secret: string, guess: string): GuessResult => {
 
   return { bulls, cows: matches - bulls };
 };
+
+export const isValidGuess = (
+  guess: string,
+  length: number,
+  base: number,
+): boolean => {
+  if (
+    !Number.isInteger(length) ||
+    length < 1 ||
+    length > base ||
+    guess.length !== length
+  ) {
+    return false;
+  }
+
+  const isValidDigit = createDigitValidator(base);
+  const normalizedDigits = [...guess.toLowerCase()];
+
+  return (
+    [...guess].every(isValidDigit) && new Set(normalizedDigits).size === length
+  );
+};
