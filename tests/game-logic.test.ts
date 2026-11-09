@@ -5,6 +5,8 @@ import {
   evaluateGuess,
   generateSecret,
   isValidGuess,
+  submitGuess,
+  type GameState,
 } from "../src/game-logic.js";
 
 describe("generateSecret", () => {
@@ -84,5 +86,36 @@ describe("countPossibleSecrets", () => {
 
   it("rejects lengths that cannot be formed from the digit alphabet", () => {
     expect(() => countPossibleSecrets(3, 2)).toThrow(RangeError);
+  });
+});
+
+describe("submitGuess", () => {
+  const state: GameState = {
+    settings: { length: 4, base: 10 },
+    secret: "0123",
+    guesses: [],
+    startedAt: 100,
+    status: "playing",
+  };
+
+  it("appends immutable guess history and marks a win", () => {
+    const nextState = submitGuess(state, "0123");
+
+    expect(nextState).not.toBe(state);
+    expect(nextState.guesses).not.toBe(state.guesses);
+    expect(state.guesses).toEqual([]);
+    expect(nextState.guesses).toEqual([
+      { guess: "0123", result: { bulls: 4, cows: 0 } },
+    ]);
+    expect(nextState.status).toBe("won");
+  });
+
+  it("does not add the same guess to history twice", () => {
+    const previousState: GameState = {
+      ...state,
+      guesses: [{ guess: "0132", result: { bulls: 2, cows: 2 } }],
+    };
+
+    expect(submitGuess(previousState, "0132")).toBe(previousState);
   });
 });
