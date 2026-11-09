@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { evaluateGuess, generateSecret } from "../src/game-logic.js";
+import {
+  createDigitValidator,
+  evaluateGuess,
+  generateSecret,
+} from "../src/game-logic.js";
 
 describe("generateSecret", () => {
   it("generates unique digits deterministically from the injected random source", () => {
@@ -26,5 +30,28 @@ describe("evaluateGuess", () => {
 
   it("counts exact matches as bulls", () => {
     expect(evaluateGuess("0123", "0132")).toEqual({ bulls: 2, cows: 2 });
+  });
+});
+
+describe("createDigitValidator", () => {
+  it("accepts only digits available in the selected base", () => {
+    const isBinaryDigit = createDigitValidator(2);
+
+    expect(isBinaryDigit("0")).toBe(true);
+    expect(isBinaryDigit("1")).toBe(true);
+    expect(isBinaryDigit("2")).toBe(false);
+    expect(isBinaryDigit("")).toBe(false);
+  });
+
+  it("accepts hexadecimal letters regardless of case", () => {
+    const isHexDigit = createDigitValidator(16);
+
+    expect(isHexDigit("A")).toBe(true);
+    expect(isHexDigit("f")).toBe(true);
+    expect(isHexDigit("g")).toBe(false);
+  });
+
+  it("rejects unsupported bases", () => {
+    expect(() => createDigitValidator(1)).toThrow(RangeError);
   });
 });
